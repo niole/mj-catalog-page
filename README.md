@@ -21,7 +21,7 @@ The application will be available at http://localhost:9000. All changes in code 
 
 ## Directions
 
-Please implement a products list similar to https://getmeadow.com/orgs/5. You may completely imitate the design of the list as you see now, or feel free to use your own design. Here are a few challenges with our current design that if you have some time leftover, you may work on a solution to these as a bonus:
+Please implement a products list similar to https://getmeadow.com/orgs/5. You may completely imitate the design of the list as you see now, or feel free to use your own design. Please disregard the filtering UI panel on the left side. We only want to see your implementation of the products list. Here are a few challenges with our current design that if you have some time leftover, you may work on a solution to these as a bonus:
 
 - Product names are currently limited to one line. Is there a way to have them be multiline without messing up the vertical rhythm of the rows on the page?
 - We do not currently display the vendor, but we have the data in our backend. How could the design accomodate for the vendor?
