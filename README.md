@@ -37,6 +37,8 @@ Some other bonuses to think about while developing:
 - Render performance
 - Code quality/structure
 
+Lastly, you do not need to touch anything in the `server` folder. The code in there just exists to help serve the application. All of your code should go in `app`
+
 Please implement everything in a branch that you can then open a pull request with.
 
 ## Notes
