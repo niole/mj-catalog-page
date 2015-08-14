@@ -10,13 +10,34 @@ var ProductItem = React.createClass({
     price: React.PropTypes.number.isRequired
   },
   render: function() {
+    var itemStyle = {
+      padding: "0 0 0 0",
+      margin: "2rem 2rem"
+    };
+    var hiddenStyle = {
+      width: "100%",
+      height:"auto",
+      maxHeight:"100%",
+      wordWrap: "break-word",
+      whiteSpace: "normal",
+      overflowY: "scroll"
+    };
+    var imgStyle = {
+      width:"100%",
+      height:"auto"
+    };
     return (
-      <div className="column">
-        <p>Name: {this.props.name}</p>
-        <p>Description: {this.props.description}</p>
-        <p>Price: {this.props.price}</p>
-        <br />
-        <br />
+      <div className="ui move up reveal column" style={itemStyle} >
+        <div className="visible content" style={{width: "100%"}} >
+          <img src={this.props.imagePath} className="ui small image" style={imgStyle} />
+        </div>
+        <div className="hidden content" style={hiddenStyle} >
+          <h1>{this.props.name}</h1>
+          <div>{this.props.description}</div>
+          <div className="ui label">
+            <i className="dollar icon"></i> {(this.props.price * 0.01).toFixed(2)}
+          </div>
+        </div>
       </div>
     );
   }

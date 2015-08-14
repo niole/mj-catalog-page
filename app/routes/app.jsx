@@ -20,7 +20,7 @@ var App = React.createClass({
   getStateFromStores: function () {
     return {
       data: _.filter(ProductsStore.getData(), function(elem) {
-        return elem.isActive;
+        return (elem.isActive && (elem.photos.length > 0));
       })
     };
   },
