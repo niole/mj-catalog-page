@@ -1,11 +1,12 @@
 'use strict';
 
+var Constants = require('../constants');
 var dispatcher = require('../dispatcher');
 
 module.exports = {
-  exampleAction: function () {
+  initialLoad: function () {
     dispatcher.handleAction({
-      type: 'STRING_CONSTANT'
+      type: Constants.INITIAL_LOAD
     });
   }
 };
