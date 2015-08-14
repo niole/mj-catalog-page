@@ -10,19 +10,26 @@ var ProductsListing = React.createClass({
     products: React.PropTypes.array.isRequired
   },
   listItems: function() {
-    return _.map(this.props.products, function(elem) {
+    var chunked = _.chunk(this.props.products, 4);
+    return _.map(chunked, function(chunk) {
       return (
-        <ProductItem
-          name={elem.name}
-          description={elem.description}
-          price={elem.options[0].price}
-        />
+        <div className="row">
+          {_.map(chunk, function(elem) {
+            return (
+              <ProductItem
+              name={elem.name}
+              description={elem.description}
+              price={elem.options[0].price}
+              />
+            );
+          })}
+        </div>
       );
     });
   },
   render: function () {
     return (
-      <div className="hello-world">
+      <div className="ui four column grid">
         {this.listItems()}
       </div>
     );
