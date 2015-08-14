@@ -1,5 +1,7 @@
 'use strict';
 
+var _ = require('lodash');
+
 var React = require('react');
 var Router = require('react-router');
 var RouteHandler = Router.RouteHandler;
@@ -17,7 +19,9 @@ var App = React.createClass({
 
   getStateFromStores: function () {
     return {
-      data: ProductsStore.getData()
+      data: _.filter(ProductsStore.getData(), function(elem) {
+        return elem.isActive;
+      })
     };
   },
 

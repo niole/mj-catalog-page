@@ -10,12 +10,11 @@ var ProductsListing = React.createClass({
     products: React.PropTypes.array.isRequired
   },
   listItems: function() {
-    _.map(this.props.products, function(elem) {
+    return _.map(this.props.products, function(elem) {
       return (
-        <Item
+        <ProductItem
           name={elem.name}
           description={elem.description}
-          path={elem.photos[0].path}
           price={elem.options[0].price}
         />
       );
