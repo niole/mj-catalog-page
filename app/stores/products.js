@@ -9,16 +9,6 @@ var dispatcher = require('../dispatcher');
 
 var _data = {};
 
-function loadInitialData() {
-  $.ajax({
-    url:'/data.json',
-    success: function(result) {
-      _data = result.data;
-    },
-    async: true
-  });
-}
-
 function getData() {
   return _data;
 }
@@ -30,7 +20,8 @@ var ProductsStore = _.extend({}, BaseStore, {
 ProductsStore.dispatchToken = dispatcher.register(function (action) {
   switch (action.type) {
     case Constants.INITIAL_LOAD:
-      loadInitialData()
+      _data = action.data;
+      ProductsStore.emitChange();
       break;
     default:
       // NO_OP

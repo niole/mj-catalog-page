@@ -4,9 +4,10 @@ var Constants = require('../constants');
 var dispatcher = require('../dispatcher');
 
 module.exports = {
-  initialLoad: function () {
+  initialLoad: function (result) {
     dispatcher.handleAction({
-      type: Constants.INITIAL_LOAD
+      type: Constants.INITIAL_LOAD,
+      data: result
     });
   }
 };
