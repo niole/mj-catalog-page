@@ -11,19 +11,15 @@ var ProductsStore = require('../stores/products');
 var ProductsListing = require('../components/ProductsListing');
 var StoreListener = require('../mixins/store-listener');
 
-// Load initial data into stores
-ProductsActions.initialLoad();
-
 var App = React.createClass({
   mixins: [StoreListener([ProductsStore])],
 
   getStateFromStores: function () {
-    return {
-      data: _.filter(ProductsStore.getData(), function(elem) {
+      this.setState({data: _.filter(ProductsStore.getData(), function(elem) {
         return (elem.isActive && (elem.photos.length > 0));
-      })
-    };
-  },
+        })
+      });
+ },
 
   render: function () {
     return (

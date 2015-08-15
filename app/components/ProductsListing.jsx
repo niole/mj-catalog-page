@@ -22,8 +22,12 @@ var ProductsListing = React.createClass({
     });
   },
   render: function () {
+    var containerStyle = {
+      width: "75%",
+      backgroundColor: "whitesmoke"
+    };
     return (
-      <div className="ui container" style={{width: "75%"}}>
+      <div className="ui container" style={containerStyle}>
         <div className="ui four column grid">
           <div className="row">
             {this.listItems()}

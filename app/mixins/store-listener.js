@@ -1,14 +1,21 @@
 'use strict';
 
+var ProductsActions = require('../actions/products');
+
 var StoreListenerMixin = function (stores) {
   return {
     getInitialState: function () {
-      return this.getStateFromStores();
+      ProductsActions.initialLoad();
+      setTimeout(function() {
+                  this.getStateFromStores()
+      }.bind(this), 3000);
+      return { data: [] };
     },
 
     componentDidMount: function () {
       for (var i = 0, l = stores.length; i < l; i++) {
         stores[i].addChangeListener(this._onChange);
+
       }
     },
 

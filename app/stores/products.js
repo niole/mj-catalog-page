@@ -15,7 +15,7 @@ function loadInitialData() {
     success: function(result) {
       _data = result.data;
     },
-    async: false
+    async: true
   });
 }
 
