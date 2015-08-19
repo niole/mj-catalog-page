@@ -15,8 +15,7 @@ var _sortState = {
                         cbd: null },
                   groupBy: {strainType:[null], consumption:[null]},
                   ranges: { price:[null, null],
-                           thc: [null, null],
-                           cbd: [null, null] }
+                           chems: [50, 50]}
                   };
 
 function getData() {

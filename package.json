@@ -47,6 +47,7 @@
     "nconf": "^0.6.9",
     "react": "^0.12.1",
     "react-router": "^0.12.4",
+    "react-slider": "^0.5.1",
     "require-dot-file": "^0.4.0",
     "semantic-ui": "^2.0.8",
     "superagent": "^0.21.0",

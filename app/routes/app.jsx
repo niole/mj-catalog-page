@@ -62,14 +62,15 @@ var App = React.createClass({
   },
 
   getStateFromStores: function() {
+    var data = ProductsStore.getData()
+    var sortState = ProductsStore.getSortState()
     this.initialState = arguments;
     this.strains = [];
     this.categories = [];
     this.setStrains = [];
     this.setCategories = [];
+    this.chems = sortState.ranges.chems;
 
-    var data = ProductsStore.getData()
-    var sortState = ProductsStore.getSortState()
 
     this.groupBy = sortState.groupBy;
     var sorts = sortState.sorts;
@@ -120,7 +121,9 @@ var App = React.createClass({
     return {
       data: updatedData,
       strains: this.setStrains,
-      categories: this.setCategories
+      categories: this.setCategories,
+      chems: this.chems
+
     };
   },
 
@@ -130,7 +133,7 @@ var App = React.createClass({
         <SideNav
           setcategories={this.state.categories}
           setstrains={this.state.strains}
-          chemicals={['cbd','thc']}
+          chems={this.state.chems}
          />
         <ProductsListing products={this.state.data} />
 
