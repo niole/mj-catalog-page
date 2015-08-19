@@ -18,7 +18,7 @@ var StoreListenerMixin = function (stores) {
       }
     },
 
-    _onChange: function () {
+    _onChange: function (index) {
       var newState = this.getStateFromStores();
 
       if (this.getMutatedOnChangeState) {

@@ -1,5 +1,5 @@
 'use strict';
-
+var $ = require('jquery');
 var React = require('react');
 
 var ProductItem = React.createClass({
@@ -7,12 +7,16 @@ var ProductItem = React.createClass({
     name: React.PropTypes.string.isRequired,
     description: React.PropTypes.string.isRequired,
     imagePath: React.PropTypes.string.isRequired,
-    price: React.PropTypes.number.isRequired
+    categoryName: React.PropTypes.string.isRequired,
+    price: React.PropTypes.number.isRequired,
+    id: React.PropTypes.string.isRequired
   },
+
   render: function() {
     var itemStyle = {
       padding: "0 0 0 0",
-      margin: "2rem 2rem"
+      margin: "2rem 2rem",
+      zIndex: 0
     };
     var hiddenStyle = {
       width: "100%",
@@ -27,7 +31,7 @@ var ProductItem = React.createClass({
       height:"auto"
     };
     return (
-      <div className="ui move up reveal column" style={itemStyle} >
+      <div key={this.props.id} id={this.props.categoryName} className="ui move up reveal column" style={itemStyle} >
         <div className="visible content" style={{width: "100%"}} >
           <img src={this.props.imagePath} className="ui small image" style={imgStyle} />
         </div>

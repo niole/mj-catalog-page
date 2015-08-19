@@ -9,12 +9,27 @@ var dispatcher = require('../dispatcher');
 
 var _data = {};
 
+var _sortState = {
+                  sorts:{ price: null,
+                        thc: null,
+                        cbd: null },
+                  groupBy: {strainType:[null], consumption:[null]},
+                  ranges: { price:[null, null],
+                           thc: [null, null],
+                           cbd: [null, null] }
+                  };
+
 function getData() {
   return _data;
 }
 
+function getSortState() {
+  return _sortState;
+}
+
 var ProductsStore = _.extend({}, BaseStore, {
-  getData: getData
+  getData: getData,
+  getSortState: getSortState
 });
 
 ProductsStore.dispatchToken = dispatcher.register(function (action) {
@@ -23,6 +38,12 @@ ProductsStore.dispatchToken = dispatcher.register(function (action) {
       _data = action.data;
       ProductsStore.emitChange();
       break;
+
+    case Constants.UPDATE_SORT:
+      _sortState = action.data;
+      ProductsStore.emitChange();
+      break;
+
     default:
       // NO_OP
       break;

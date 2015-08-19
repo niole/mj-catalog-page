@@ -12,8 +12,10 @@ var ProductsListing = React.createClass({
   listItems: function() {
     return _.map(this.props.products, function(elem) {
       return (
-        <ProductItem
+       <ProductItem
           name={elem.name}
+          id={elem.id}
+          categoryName={elem.category.name}
           description={elem.description}
           imagePath={elem.photos[0].sizes["180"]}
           price={elem.options[0].price}
@@ -24,7 +26,8 @@ var ProductsListing = React.createClass({
   render: function () {
     var containerStyle = {
       width: "75%",
-      backgroundColor: "whitesmoke"
+      backgroundColor: "whitesmoke",
+      paddingTop: "2rem"
     };
     return (
       <div className="ui container" style={containerStyle}>
