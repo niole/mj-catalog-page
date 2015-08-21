@@ -27,7 +27,9 @@ var ProductsListing = React.createClass({
     var containerStyle = {
       width: "75%",
       backgroundColor: "whitesmoke",
-      paddingTop: "2rem"
+      paddingTop: "2rem",
+      position: "absolute",
+      right: "0px"
     };
     return (
       <div className="ui container" style={containerStyle}>

@@ -25,56 +25,117 @@ $.ajax({
 var App = React.createClass({
   mixins: [StoreListener([ProductsStore])],
 
-  dataFilter: function(strainType, consumption, elt) {
-  //returns boolean value
-    if (strainType[0] === null && consumption[0] === null) {
-      return true;
+  foldL: function(dataObject, paths) {
+    if (paths.length === 0) {
+      return dataObject;
+    } else {
+      dataObject = dataObject[paths.slice(0,1)];
+      return this.foldL(dataObject, paths.slice(1,paths.length));
     }
-    var canPush = false;
-    if (strainType[0] && consumption[0]) {
-      for (var i=0; i<strainType.length; i++) {
-        var strain = strainType[i];
-        for (var j=0; j<consumption.length; j++) {
-        var mode = consumption[j];
-          if (strain.category === elt[strain.attr[0]] &&
-              mode.category === elt[mode.attr[0]][mode.attr[1]]) {
-              canPush = true;
+  },
+
+  inRange: function(title, range, elt) {
+    /* range - the chosen range
+     * title - attribute pointing to range
+     * returns bool
+     */
+    var match = true;
+    if (title === "chems") {
+      //TODO: check if real proportion inside proposed proportion range with std of +/-10
+      var Thc_Cbdmg = _.map(range, function(chem) {
+          var mgs = this.foldL(elt, chem.attr);
+          if (mgs === "" || mgs === null) {
+            match = false;
+            return null;
+          }
+          return mgs.match(/\d+/g);
+      }.bind(this));
+      if (match === false) {
+        return match;
+      }
+      //if there is someting in the range,
+      //keep going
+
+      var sum = _.reduce(Thc_Cbdmg, function(a,b) {
+        return a+b;
+      });
+      var chemPercents = _.map(Thc_Cbdmg, function(chem) {
+                          if(chem) {
+                            return (chem*100)/sum;
+                          }
+                          console.log('letting through null vals in chem range processor');
+                          return null;
+                        });
+      //check if real percents inside those proposed
+      //with chem slider
+      if (chemPercents[0] < range[0].category-10 ||
+          chemPercents[1] > range[1].category+10 ) {
+        match = false;
+        return match;
+      }
+    }
+    return match;
+  },
+
+  dataFilter: function(groupByObj, elt) {
+    /*
+     * returns boolean value
+     * if all groups null, return true for all
+     * when 1 or more groups not null, then element must match
+     * at least 1 from each specified grouping
+    */
+    var totalGs = 0;
+    var nullGs = 0;
+    var keep = 0;
+    for (var g in groupByObj) {
+      totalGs += 1;
+
+      if (groupByObj[g][0]) {   //if filter data exists for group
+
+        if (typeof(groupByObj[g][0].category) !== 'string') {
+
+          /* Distinguishes if number or string:
+           * i.e. range or category groupBy group.
+           * Only dealing with chems for now
+           */
+
+          if (this.inRange(g, groupByObj[g], elt)) {
+            keep += 1;
+          }
+        } else {
+          //iterate over each category attr in grouping objects
+          //and look for matches
+          //if one match, break loop and increment keep by 1
+          for (var i=0; i<groupByObj[g].length; i++) {
+            if (groupByObj[g][i].category === this.foldL(elt, groupByObj[g][i].attr)) {
+              keep += 1;
+              break;
+            }
           }
         }
-      }
-    } else {
-      if (strainType[0]) {
-        _.forEach(strainType, function(strain) {
-          if (strain.category === elt[strain.attr[0]][strain.attr[1]]) {
-            canPush = true;
-          }
-        });
-      }
-      if (consumption[0]) {
-        _.forEach(consumption, function(mode) {
-          if (mode.category === elt[mode.attr[0]][mode.attr[1]]) {
-            canPush = true;
-          }
-        });
+      } else {
+        nullGs += 1;
       }
     }
-    return canPush;
+    if (totalGs === nullGs) {
+      //if all is null, then return true for all
+      return true;
+    } else if (keep === totalGs-nullGs) {
+      return true;
+    } else {
+      return false;
+    }
   },
 
   getStateFromStores: function() {
     var data = ProductsStore.getData()
     var sortState = ProductsStore.getSortState()
-    this.initialState = arguments;
     this.strains = [];
     this.categories = [];
     this.setStrains = [];
     this.setCategories = [];
-    this.chems = sortState.ranges.chems;
-
-
     this.groupBy = sortState.groupBy;
-    var sorts = sortState.sorts;
-    var ranges = sortState.ranges;
+    this.chems = this.groupBy.chems;
 
     // TODO: sort data based on sort state
     var updatedData =  _.filter(data, function(elem) {
@@ -94,28 +155,10 @@ var App = React.createClass({
         return (
           (elem.isActive && (elem.photos.length > 0))
             &&
-            this.dataFilter(this.groupBy.strainType, this.groupBy.consumption, elem)
+            this.dataFilter(this.groupBy, elem)
             );
       }.bind(this)).sort(function(a, b) {
-        if ( sorts.price ) {
-          if ( sorts.price === 1 ) {
-            //ascending
-            return a.options.price.toFixed(2) - b.options.price.toFixed(2)
-          }
-          if ( sorts.price === -1 ) {
-            //descending
-            if (a.options.price.toFixed(2) - b.options.price.toFixed(2) > 0) {
-              return -1;
-            }
-            else if (a.options.price.toFixed(2) - b.options.price.toFixed(2) < 0) {
-              return 1;
-            } else {
-              return 0;
-            }
-          }
-        } else {
           return a.categoryId - b.categoryId;
-        }
       }) || []
 
     return {

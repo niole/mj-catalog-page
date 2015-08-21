@@ -13,9 +13,10 @@ var _sortState = {
                   sorts:{ price: null,
                         thc: null,
                         cbd: null },
-                  groupBy: {strainType:[null], consumption:[null]},
-                  ranges: { price:[null, null],
-                           chems: [50, 50]}
+                  groupBy: {chems: [null, null],
+                            strainType:[null],
+                            consumption:[null],
+                            price:[null, null]}
                   };
 
 function getData() {

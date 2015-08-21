@@ -9,7 +9,7 @@ var ProductItem = React.createClass({
     imagePath: React.PropTypes.string.isRequired,
     categoryName: React.PropTypes.string.isRequired,
     price: React.PropTypes.number.isRequired,
-    id: React.PropTypes.string.isRequired
+    id: React.PropTypes.number.isRequired
   },
 
   render: function() {

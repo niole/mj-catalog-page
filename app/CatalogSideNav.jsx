@@ -19,7 +19,12 @@ var SideNav = React.createClass({
   },
 
   getInitialState: function() {
-    return {thc: this.props.chems[0], cbd: this.props.chems[1]};
+    //this is in component state that should never touch the stores
+    if (this.props.chems[0]) {
+      return {thc: this.props.chems[0].category || 50, cbd: this.props.chems[1].category || 50};
+    } else {
+      return {thx: 50, cbd: 50};
+    }
   },
 
   handleMode: function(mode) {
@@ -115,20 +120,25 @@ var SideNav = React.createClass({
   buildChemicalSliders: function() {
     return (
       <div className="field">
-        <Slider defaultValue={50} onAfterChange={this.setChems} onChange={this.thc} withBars>
+        <Slider
+          defaultValue={50}
+          onAfterChange={this.setChemStore}
+          onChange={this.localChemUpdate} withBars>
+
           <div className="my-handle">{this.state.thc}/{this.state.cbd}</div>
+
         </Slider>
       </div>
     );
   },
 
-  thc: function(num) {
+  localChemUpdate: function(num) {
     this.setState({thc: num, cbd: 100-num});
   },
 
-  setChems: function(num) {
-    this.sortState.ranges.chems[0] = num;
-    this.sortState.ranges.chems[1] = 100-num;
+  setChemStore: function(num) {
+    this.sortState.groupBy.chems[0] = {category: num, attr: ["percentThc"]};
+    this.sortState.groupBy.chems[1] = {category: 100-num, attr: ["percentCbd"]};
     ProductsActions.updateSortState(this.sortState);
   },
 
