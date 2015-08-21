@@ -11,6 +11,7 @@ var SideNav = React.createClass({
   propTypes: {
     setcategories: React.PropTypes.array.isRequired,
     setstrains: React.PropTypes.array.isRequired,
+    active: React.PropTypes.object.isRequired,
     chems: React.PropTypes.array.isRequired
   },
 
@@ -21,7 +22,7 @@ var SideNav = React.createClass({
   getInitialState: function() {
     //this is in component state that should never touch the stores
     if (this.props.chems[0]) {
-      return {thc: this.props.chems[0].category || 50, cbd: this.props.chems[1].category || 50};
+      return {thc: this.props.chems[0].value || 50, cbd: this.props.chems[1].value || 50};
     } else {
       return {thx: 50, cbd: 50};
     }
@@ -30,7 +31,7 @@ var SideNav = React.createClass({
   handleMode: function(mode) {
     var modeArray = _.map(this.sortState.groupBy.consumption, function(cat) {
                                                           if (cat) {
-                                                            return cat.category;
+                                                            return cat.value;
                                                           } else {
                                                             return null;
                                                           }
@@ -39,9 +40,9 @@ var SideNav = React.createClass({
       if ( $("#"+mode).is(":checked") ) {
         if (modeArray.indexOf(mode) === -1) {
           if (modeArray[0] === null) {
-            this.sortState.groupBy.consumption[0] = {category: mode, attr: ["category","name"]};
+            this.sortState.groupBy.consumption[0] = {value: mode, attrPath: ["category","name"]};
           } else {
-            this.sortState.groupBy.consumption.push({category: mode, attr: ["category","name"]});
+            this.sortState.groupBy.consumption.push({value: mode, attrPath: ["category","name"]});
           }
 
         }
@@ -63,7 +64,7 @@ var SideNav = React.createClass({
   handleStrain: function(strain) {
     var strainArray = _.map(this.sortState.groupBy.strainType, function(cat) {
                                                             if (cat) {
-                                                              return cat.category
+                                                              return cat.value
                                                             } else {
                                                               return null;
                                                             }
@@ -72,9 +73,9 @@ var SideNav = React.createClass({
       if ( $('#'+strain).is(":checked" )) {
         if (strainArray.indexOf(strain) === -1) {
           if (strainArray[0] === null) {
-            this.sortState.groupBy.strainType[0] = {category: strain, attr: ["strainType"]};
+            this.sortState.groupBy.strainType[0] = {value: strain, attrPath: ["strainType"]};
           } else {
-            this.sortState.groupBy.strainType.push({category: strain, attr: ["strainType"]});
+            this.sortState.groupBy.strainType.push({value: strain, attrPath: ["strainType"]});
           }
         }
       } else if ( $("#"+strain).is(":checked") === false) {
@@ -104,6 +105,7 @@ var SideNav = React.createClass({
       );
     }.bind(this));
   },
+
   buildStrainTypes: function() {
     return _.map(this.props.setstrains, function(strain) {
       return (
@@ -117,18 +119,64 @@ var SideNav = React.createClass({
     }.bind(this));
   },
 
-  buildChemicalSliders: function() {
+  updateActiveState: function(bool, title) {
+    event.preventDefault();
+    console.log('in acteistate update');
+    this.sortState.active[title] = bool;
+    console.log('this.sortState');
+    console.log(this.sortState);
+
+    ProductsActions.updateSortState(this.sortState);
+  },
+
+  buildActiveToggle: function(active, title) {
+    var activeElt = {name: "activate-"+title, checked: null};
+    var inactiveElt = {name: "deacivate-"+title, checked: null};
+
+    if (active) {
+      activeElt.checked = "ui radio checkbox checked";
+      inactiveElt.checked = "ui radio checkbox";
+    } else {
+      activeElt.checked = "ui radio checkbox";
+      inactiveElt.checked = "ui radio checkbox checked";
+    }
     return (
-      <div className="field">
-        <Slider
-          defaultValue={50}
-          onAfterChange={this.setChemStore}
-          onChange={this.localChemUpdate} withBars>
-
-          <div className="my-handle">{this.state.thc}/{this.state.cbd}</div>
-
-        </Slider>
+      <div className="ui form">
+        <div className="inline fields">
+          <div className="field">
+            <div className={activeElt.checked}>
+              <input onChange={this.updateActiveState.bind(null, true, title)} type="radio" name={activeElt.name}/>
+              <label>activate</label>
+            </div>
+          </div>
+          <div className="field">
+            <div className={inactiveElt.checked}>
+              <input onChange={this.updateActiveState.bind(null, false, title)} type="radio" name={inactiveElt.name} checked="checked"/>
+              <label>deactivate</label>
+            </div>
+          </div>
+        </div>
       </div>
+    );
+  },
+
+  buildChemicalSliders: function() {
+
+    return (
+      <span>
+        {this.buildActiveToggle(this.props.active.chems, "chems")}
+        <div className="field">
+          <Slider
+            disabled={!this.props.active.chems}
+            defaultValue={50}
+            onAfterChange={this.setChemStore}
+            onChange={this.localChemUpdate} withBars>
+
+            <div className="my-handle">{this.state.thc}/{this.state.cbd}</div>
+
+          </Slider>
+        </div>
+      </span>
     );
   },
 
@@ -137,8 +185,8 @@ var SideNav = React.createClass({
   },
 
   setChemStore: function(num) {
-    this.sortState.groupBy.chems[0] = {category: num, attr: ["percentThc"]};
-    this.sortState.groupBy.chems[1] = {category: 100-num, attr: ["percentCbd"]};
+    this.sortState.groupBy.chems[0] = {value: num, attrPath: ["percentThc"]};
+    this.sortState.groupBy.chems[1] = {value: 100-num, attrPath: ["percentCbd"]};
     ProductsActions.updateSortState(this.sortState);
   },
 
@@ -159,6 +207,9 @@ var SideNav = React.createClass({
           <div className="menu">
             <div className="ui form">
               <div className="grouped fields">
+
+
+
                 {this.buildChemicalSliders()}
               </div>
             </div>

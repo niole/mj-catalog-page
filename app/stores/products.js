@@ -9,10 +9,7 @@ var dispatcher = require('../dispatcher');
 
 var _data = {};
 
-var _sortState = {
-                  sorts:{ price: null,
-                        thc: null,
-                        cbd: null },
+var _sortState = { active: {strainType: true, consumption: true, chems: false, price: false},
                   groupBy: {chems: [null, null],
                             strainType:[null],
                             consumption:[null],

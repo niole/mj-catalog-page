@@ -38,12 +38,15 @@ var App = React.createClass({
     /* range - the chosen range
      * title - attribute pointing to range
      * returns bool
+     *
+     * for chems  - checks if real proportion inside proposed
+     * range with std of +/-10 %
+     *
      */
     var match = true;
     if (title === "chems") {
-      //TODO: check if real proportion inside proposed proportion range with std of +/-10
       var Thc_Cbdmg = _.map(range, function(chem) {
-          var mgs = this.foldL(elt, chem.attr);
+          var mgs = this.foldL(elt, chem.attrPath);
           if (mgs === "" || mgs === null) {
             match = false;
             return null;
@@ -68,8 +71,8 @@ var App = React.createClass({
                         });
       //check if real percents inside those proposed
       //with chem slider
-      if (chemPercents[0] < range[0].category-10 ||
-          chemPercents[1] > range[1].category+10 ) {
+      if (chemPercents[0] < range[0].value - 10 ||
+          chemPercents[1] > range[1].value + 10 ) {
         match = false;
         return match;
       }
@@ -90,10 +93,9 @@ var App = React.createClass({
     for (var g in groupByObj) {
       totalGs += 1;
 
-      if (groupByObj[g][0]) {   //if filter data exists for group
+      if (this.sortState.active[g] && groupByObj[g][0]) {   //if filter data exists for group and active
 
-        if (typeof(groupByObj[g][0].category) !== 'string') {
-
+        if (typeof(groupByObj[g][0].value) !== 'string') {
           /* Distinguishes if number or string:
            * i.e. range or category groupBy group.
            * Only dealing with chems for now
@@ -103,11 +105,13 @@ var App = React.createClass({
             keep += 1;
           }
         } else {
-          //iterate over each category attr in grouping objects
+
+          //iterate over each category attrPath in grouping objects
           //and look for matches
           //if one match, break loop and increment keep by 1
+
           for (var i=0; i<groupByObj[g].length; i++) {
-            if (groupByObj[g][i].category === this.foldL(elt, groupByObj[g][i].attr)) {
+            if (groupByObj[g][i].value === this.foldL(elt, groupByObj[g][i].attrPath)) {
               keep += 1;
               break;
             }
@@ -129,34 +133,33 @@ var App = React.createClass({
 
   getStateFromStores: function() {
     var data = ProductsStore.getData()
-    var sortState = ProductsStore.getSortState()
+    this.sortState = ProductsStore.getSortState()
+    this.groupBy = this.sortState.groupBy;
+    this.chems = this.groupBy.chems;
+
     this.strains = [];
     this.categories = [];
     this.setStrains = [];
     this.setCategories = [];
-    this.groupBy = sortState.groupBy;
-    this.chems = this.groupBy.chems;
 
     // TODO: sort data based on sort state
     var updatedData =  _.filter(data, function(elem) {
 
         if (this.setStrains.indexOf(elem.strainType) === -1) {
-          this.strains.push({attr: ['strainType'], category: elem.strainType});
+          this.strains.push({attrPath: ['strainType'], value: elem.strainType});
           this.setStrains.push(elem.strainType);
-
-
         }
         if (this.setCategories.indexOf(elem.category.name) === -1) {
-          this.categories.push({attr: ['category','name'], category: elem.category.name});
+          this.categories.push({attrPath: ['category','name'], value: elem.category.name});
           this.setCategories.push(elem.category.name);
         }
-
 
         return (
           (elem.isActive && (elem.photos.length > 0))
             &&
             this.dataFilter(this.groupBy, elem)
             );
+
       }.bind(this)).sort(function(a, b) {
           return a.categoryId - b.categoryId;
       }) || []
@@ -165,8 +168,8 @@ var App = React.createClass({
       data: updatedData,
       strains: this.setStrains,
       categories: this.setCategories,
-      chems: this.chems
-
+      chems: this.chems,
+      active: this.sortState.active
     };
   },
 
@@ -177,6 +180,7 @@ var App = React.createClass({
           setcategories={this.state.categories}
           setstrains={this.state.strains}
           chems={this.state.chems}
+          active={this.state.active}
          />
         <ProductsListing products={this.state.data} />
 
